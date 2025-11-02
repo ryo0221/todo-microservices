@@ -1,0 +1,130 @@
+version: "3.9"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Todo Microservices – Local Dev Stack
+#   - gateway  : FastAPI-based reverse proxy (path routing /auth/*, /todos/*)
+#   - auth     : Auth service (register/login, issues JWT)
+#   - todo     : Todo CRUD service (validates JWT)
+#   - postgres : Single Postgres instance hosting multiple DBs (auth_db, todo_db)
+#
+# Start:   docker compose -f infra/docker/docker-compose.yml up --build
+# Cleanup: docker compose -f infra/docker/docker-compose.yml down -v
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+  gateway:
+    build:
+      context: ../../gateway
+      dockerfile: Dockerfile
+    container_name: ms-gateway
+    env_file:
+      - ../../gateway/.env
+    environment:
+      # Downstream service base URLs (service discovery via Docker DNS)
+      AUTH_SERVICE_URL: http://auth:8000
+      TODO_SERVICE_URL: http://todo:8000
+      LOG_LEVEL: INFO
+    ports:
+      - "8080:8080"   # Host → Gateway
+    depends_on:
+      auth:
+        condition: service_healthy
+      todo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - msnet
+
+  auth:
+    build:
+      context: ../../services/auth
+      dockerfile: Dockerfile
+    container_name: ms-auth
+    env_file:
+      - ../../services/auth/.env
+    environment: {}
+      # Example overrides if not provided in .env
+      # DATABASE_URL: postgresql+psycopg://auth_user:auth_pass@postgres:5432/auth_db
+      # JWT_SECRET: please_change_me
+      # JWT_ALGORITHM: HS256
+      # UVICORN_PORT: 8000
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - msnet
+
+  todo:
+    build:
+      context: ../../services/todo
+      dockerfile: Dockerfile
+    container_name: ms-todo
+    env_file:
+      - ../../services/todo/.env
+    environment: {}
+      # Example overrides if not provided in .env
+      # DATABASE_URL: postgresql+psycopg://todo_user:todo_pass@postgres:5432/todo_db
+      # UVICORN_PORT: 8000
+      # AUTH_JWKS_URL: http://auth:8000/.well-known/jwks.json
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - msnet
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ms-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # The default POSTGRES_DB is created automatically ("postgres").
+      # We'll create additional DBs/users via init SQL below.
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../../infra/docker/init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - msnet
+
+  # Optional: Jaeger for tracing (uncomment when OpenTelemetry is wired)
+  # jaeger:
+  #   image: jaegertracing/all-in-one:1.57
+  #   container_name: ms-jaeger
+  #   ports:
+  #     - "16686:16686"   # UI
+  #     - "4317:4317"     # OTLP gRPC
+  #     - "4318:4318"     # OTLP HTTP
+  #   networks:
+  #     - msnet
+
+volumes:
+  pgdata:
+
+networks:
+  msnet:
+    driver: bridge
