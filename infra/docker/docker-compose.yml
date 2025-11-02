@@ -17,9 +17,14 @@ services:
       context: ../../gateway
       dockerfile: Dockerfile
     container_name: ms-gateway
+    command: uvicorn gateway.app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ../..:/workspace
+    working_dir: /workspace/gateway
     env_file:
       - ../../gateway/.env
     environment:
+      PYTHONPATH: /workspace
       # Downstream service base URLs (service discovery via Docker DNS)
       AUTH_SERVICE_URL: http://auth:8000
       TODO_SERVICE_URL: http://todo:8000
