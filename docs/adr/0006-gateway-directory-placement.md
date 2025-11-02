@@ -104,6 +104,9 @@ API Gateway は個々のアプリケーションサービス（Auth / Todo）の
     └── Makefile
 ```
 
+> Gateway はアプリケーションサービスではなく、**境界レイヤー（edge）**として扱う。
+そのため、services/ 配下ではなく リポジトリ直下に置く。
+
 ## Links
 - ADR: Split Services into Auth and Todo (with API Gateway)
 - ADR: Local Dev with Docker Compose Override & Hot Reload
