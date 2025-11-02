@@ -175,3 +175,29 @@ async def test_forward_status_passthrough(monkeypatch):
 
     assert res.status_code == 404
     assert res.json() == {"detail": "not found"}
+
+@pytest.mark.asyncio
+async def test_forward_response_headers(monkeypatch):
+    """
+    Gateway should preserve important downstream response headers.
+    """
+
+    async def fake_send(self, request, **kwargs):
+        class FakeResponse:
+            status_code = 200
+            headers = {
+                "content-type": "application/json",
+                "x-service-version": "1.2.3"
+            }
+            async def json(inner_self):
+                return {"message": "ok"}
+        return FakeResponse()
+
+    monkeypatch.setattr("gateway.app.proxy.AsyncClient.send", fake_send)
+
+    client = TestClient(app)
+    res = client.get("/todos")
+
+    assert res.status_code == 200
+    assert res.headers.get("content-type") == "application/json"
+    assert res.headers.get("x-service-version") == "1.2.3"
