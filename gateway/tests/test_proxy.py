@@ -1,7 +1,7 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import AsyncClient, ASGITransport, Request
 from gateway.app.main import app
-
+from starlette.testclient import TestClient
 
 class FakeResponse:
     def __init__(self, payload, status_code=200):
@@ -128,3 +128,29 @@ async def test_forward_headers(monkeypatch):
             "x-request-id": "req-999",
         }
     }
+
+@pytest.mark.asyncio
+async def test_forward_post_body(monkeypatch):
+    """
+    Gateway should forward JSON body to downstream and return its response.
+    """
+
+    async def fake_send(self, request: Request, **kwargs):
+        class FakeResponse:
+            status_code = 200
+            async def json(inner_self):
+                # 下流に渡されたbodyを検証
+                import json
+                # print("📦 Received content in fake_send:", request.content)
+                body = json.loads(request.content)
+                return {"received": body}
+        return FakeResponse()
+
+    monkeypatch.setattr("gateway.app.proxy.AsyncClient.send", fake_send)
+
+    client = TestClient(app)
+    data = {"title": "Write tests", "done": False}
+
+    res = client.post("/todos", json=data)
+    assert res.status_code == 200
+    assert res.json() == {"received": data}
