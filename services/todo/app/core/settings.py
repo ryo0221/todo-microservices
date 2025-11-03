@@ -22,9 +22,7 @@ class Settings(BaseSettings):
     def SQLALCHEMY_DATABASE_URI(self) -> str:
         """If TESTING=true → use SQLite."""
         if self.TESTING:
-            print("⚙️ Using SQLite for testing (TESTING=true)")
             return "sqlite:///./test.db"
-        print(f"🐘 Using PostgreSQL: {self.DATABASE_URL}")
         return self.DATABASE_URL
 
 
