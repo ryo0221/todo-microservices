@@ -1,6 +1,6 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-from gateway.app.core.rate_limiter import InMemoryRateLimiter
+from ..core.rate_limiter import InMemoryRateLimiter
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):

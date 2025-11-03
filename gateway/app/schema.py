@@ -10,14 +10,9 @@ class Todo:
 @strawberry.type
 class Query:
     @strawberry.field
-    def hello(self) -> str:
-        return "Hello, GraphQL!"
-    
-    @strawberry.field
     async def todos(self) -> list[Todo]:
         """
         REST API (/todos) を叩いて Todo の一覧を返す。
-        GatewayからTodoサービスのRESTエンドポイントを呼び出す。
         """
         async with httpx.AsyncClient() as client:
             resp = await client.get("http://todo:8000/todos")

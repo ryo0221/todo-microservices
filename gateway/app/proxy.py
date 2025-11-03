@@ -1,8 +1,3 @@
-from typing import Optional
-from urllib import request
-from urllib.parse import urljoin
-
-import asyncio
 from httpx import AsyncClient, Request, Response
 from fastapi import Request as FastAPIRequest
 from starlette.responses import JSONResponse, Response as StarletteResponse
