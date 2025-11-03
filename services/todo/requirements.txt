@@ -6,4 +6,5 @@ psycopg[binary]==3.2.3
 PyJWT==2.9.0
 # テスト（コンテナでpytestを動かす場合）
 pytest==8.3.3
+pytest-env
 httpx==0.27.2
