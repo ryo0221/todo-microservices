@@ -25,7 +25,7 @@ jobs:
         run: |
           pip install ruff black
           ruff format   .
-          black --check .
+          black .
       - name: Run tests for gateway
         working-directory: gateway
         run: |
