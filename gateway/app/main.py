@@ -1,9 +1,12 @@
 from fastapi import FastAPI, Request
-
+from strawberry.fastapi import GraphQLRouter
+from .graphql.schema import schema
 from .proxy import forward
 from .middleware import register_middlewares
 
 app = FastAPI(title="API Gateway")
+
+app.include_router(GraphQLRouter(schema=schema), prefix="/graphql")
 
 register_middlewares(app)
 
