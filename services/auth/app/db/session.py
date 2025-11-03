@@ -8,7 +8,7 @@ def get_engine():
     """
     from app.core.settings import settings  # ← インポートを関数内に遅延させる
     url = settings.SQLALCHEMY_DATABASE_URI
-    print(f"🔧 Using DB Engine: {url}")
+    print("Database URL:", url)
     return create_engine(url, connect_args={"check_same_thread": False} if url.startswith("sqlite") else {})
 
 
