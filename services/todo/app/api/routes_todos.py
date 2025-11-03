@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..db.session import get_db
 from ..models.todo import Todo
-from ..schemas.todo import TodoCreate, TodoOut, TodoUpdate
+from ..schemas.todo import TodoCreate, TodoOut, TodoUpdate, TodoResponse
 from ..core.security import get_current_user_id
 
 router = APIRouter(prefix="/todos", tags=["todos"])
