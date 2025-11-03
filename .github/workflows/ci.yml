@@ -45,5 +45,6 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/services/todo
         run: |
+          export TESTING=true
           pip install -r requirements.txt
           pytest -q -s
