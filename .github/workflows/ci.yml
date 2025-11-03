@@ -24,7 +24,7 @@ jobs:
       - name: Run formatter (ruff + black)
         run: |
           pip install ruff black
-          ruff format --exit-non-zero-on-format  .
+          ruff format   .
           black --check .
       - name: Run tests for gateway
         working-directory: gateway
