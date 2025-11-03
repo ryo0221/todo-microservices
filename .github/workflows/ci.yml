@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run formatter (ruff + black)
+        run: |
+          pip install ruff black
+          ruff --exit-zero .
+          black --check .
+      - name: Run tests for gateway
+        working-directory: gateway
+        run: |
+          pip install -r requirements.txt
+          pytest -q
+      - name: Run tests for auth
+        working-directory: auth
+        run: |
+          pip install -r requirements.txt
+          pytest -q
+      - name: Run tests for todo
+        working-directory: todo
+        run: |
+          pip install -r requirements.txt
+          pytest -q
