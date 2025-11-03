@@ -33,11 +33,15 @@ jobs:
           pytest -q
       - name: Run tests for auth
         working-directory: ./services/auth
+        env:
+          PYTHONPATH: ${{ github.workspace }}/services/auth
         run: |
           pip install -r requirements.txt
           pytest -q
       - name: Run tests for todo
         working-directory: ./services/todo
+        env:
+          PYTHONPATH: ${{ github.workspace }}/services/todo
         run: |
           pip install -r requirements.txt
           pytest -q
