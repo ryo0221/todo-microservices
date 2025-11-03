@@ -7,7 +7,7 @@ def test_cors_headers_present():
     """
     client = TestClient(app)
     resp = client.options("/todos")  # Preflight
-    print("CORS Preflight Response Headers:", resp.headers)
+
     # Preflight response must not require JSON decoding
     assert resp.status_code in (200, 204)
     headers = resp.headers

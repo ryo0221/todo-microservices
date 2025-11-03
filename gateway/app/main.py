@@ -3,11 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .proxy import forward
 from .middleware.cors_preflight import PreflightMiddleware
+from .middleware.logging_middleware import LoggingMiddleware
 
 app = FastAPI(title="API Gateway")
 
 # Register custom middleware first (intercepts before routing)
 app.add_middleware(PreflightMiddleware)
+app.add_middleware(LoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
