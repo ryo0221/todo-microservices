@@ -32,12 +32,12 @@ jobs:
           pip install -r requirements.txt
           pytest -q
       - name: Run tests for auth
-        working-directory: auth
+        working-directory: ./services/auth
         run: |
           pip install -r requirements.txt
           pytest -q
       - name: Run tests for todo
-        working-directory: todo
+        working-directory: ./services/todo
         run: |
           pip install -r requirements.txt
           pytest -q
