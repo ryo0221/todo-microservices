@@ -13,8 +13,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Auth Service", lifespan=lifespan)
 
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "auth"}
-
-app.include_router(auth_router)
