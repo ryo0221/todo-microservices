@@ -35,6 +35,7 @@ jobs:
         working-directory: ./services/auth
         env:
           PYTHONPATH: ${{ github.workspace }}/services/auth
+          TESTING: true
         run: |
           pip install -r requirements.txt
           pytest -q
