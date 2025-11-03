@@ -37,6 +37,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/services/auth
           TESTING: true
         run: |
+          export TESTING=true
           pip install -r requirements.txt
           pytest -q -s
       - name: Run tests for todo
