@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+psycopg://auth_user:auth_pass@postgres:5432/auth_db"
+    DATABASE_URL: str = "postgresql+psycopg://todo_user:todo_pass@postgres:5432/todo_db"
     JWT_SECRET: str = "please_change_me"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
