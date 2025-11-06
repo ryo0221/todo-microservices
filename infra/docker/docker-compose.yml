@@ -17,20 +17,19 @@ services:
       context: ../../gateway
       dockerfile: Dockerfile
     container_name: ms-gateway
-    command: uvicorn gateway.app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8080:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ../..:/workspace
-    working_dir: /workspace/gateway
+      - ../../gateway:/app
     env_file:
       - ../../gateway/.env
     environment:
-      PYTHONPATH: /workspace
+      PYTHONPATH: /app
       # Downstream service base URLs (service discovery via Docker DNS)
       AUTH_SERVICE_URL: http://auth:8000
       TODO_SERVICE_URL: http://todo:8000
       LOG_LEVEL: INFO
-    ports:
-      - "8080:8080"   # Host → Gateway
     depends_on:
       auth:
         condition: service_healthy
@@ -42,17 +41,20 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - msnet
+      - internal
 
   auth:
     build:
       context: ../../services/auth
       dockerfile: Dockerfile
     container_name: ms-auth
+    volumes:
+      - ../../services/auth:/app
     env_file:
       - ../../services/auth/.env
-    environment: {}
-      # Example overrides if not provided in .env
+    environment:
+      PYTHONPATH: /app
+      LOG_LEVEL: INFO
     expose:
       - "8000"
     depends_on:
@@ -63,24 +65,22 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
-    ports:
-      - "8000:8000"
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     networks:
-      - msnet
+      - internal
 
   todo:
     build:
       context: ../../services/todo
       dockerfile: Dockerfile
     container_name: ms-todo
+    volumes:
+      - ../../services/todo:/app
     env_file:
       - ../../services/todo/.env
-    environment: {}
-      # Example overrides if not provided in .env
-      # DATABASE_URL: postgresql+psycopg://todo_user:todo_pass@postgres:5432/todo_db
-      # UVICORN_PORT: 8000
-      # AUTH_JWKS_URL: http://auth:8000/.well-known/jwks.json
+    environment:
+      LOG_LEVEL: INFO
+      PYTHONPATH: /app
     expose:
       - "8000"
     depends_on:
@@ -91,8 +91,9 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     networks:
-      - msnet
+      - internal
 
   postgres:
     image: postgres:16-alpine
@@ -113,7 +114,7 @@ services:
       timeout: 3s
       retries: 20
     networks:
-      - msnet
+      - internal
 
   # Optional: Jaeger for tracing (uncomment when OpenTelemetry is wired)
   # jaeger:
@@ -130,5 +131,5 @@ volumes:
   pgdata:
 
 networks:
-  msnet:
+  internal:
     driver: bridge

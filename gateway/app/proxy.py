@@ -45,9 +45,6 @@ async def forward(request: FastAPIRequest, upstream_base: str) -> JSONResponse:
     # ボディ（今はそのまま）
     body = await request.body()
     req = Request(request.method, upstream_url, content=body, headers=forward_headers)
-    async with make_client() as client:
-        # send() を使うことでテストの monkeypatch 対象に一致させる
-        resp = await client.send(req)
 
     # 下流へ転送
     async with make_client() as client:
