@@ -5,6 +5,7 @@ from app.core.security import verify_token
 
 security = HTTPBearer(auto_error=False)
 
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):

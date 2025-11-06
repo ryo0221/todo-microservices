@@ -50,6 +50,7 @@ def _override_get_db(db_session):
             yield db_session
         finally:
             pass
+
     app.dependency_overrides[get_db] = _get_db_for_tests
     yield
     app.dependency_overrides.clear()
@@ -60,4 +61,3 @@ def client():
     # Provide a fresh TestClient per test function
     with TestClient(app) as c:
         yield c
-

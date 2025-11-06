@@ -1,6 +1,7 @@
 from starlette.testclient import TestClient
 from gateway.app.main import app
 
+
 def test_cors_headers_present():
     """
     Gateway should add standard CORS headers to all responses.

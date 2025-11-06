@@ -18,7 +18,7 @@ def register_middlewares(app: FastAPI) -> None:
         allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"]
+        allow_headers=["*"],
     )
     app.add_middleware(PreflightMiddleware)
     app.add_middleware(RateLimitMiddleware, limit=10, window_seconds=60)

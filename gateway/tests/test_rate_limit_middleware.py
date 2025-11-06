@@ -37,6 +37,7 @@ def test_rate_limit_blocks_after_limit_exceeded(limited_app):
 
     # After window resets, it should allow again
     import time
+
     time.sleep(2.1)
     r2 = client.get("/ping")
     assert r2.status_code == 200

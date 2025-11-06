@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 from gateway.app.middleware.logging_middleware import LoggingMiddleware
 
+
 @pytest.fixture()
 def fake_app():
     app = FastAPI()
@@ -31,7 +32,8 @@ def test_logging_middleware_outputs_structured_log(caplog, fake_app):
 
     # Find valid JSON log lines
     valid_json_lines = [
-        rec.message for rec in caplog.records
+        rec.message
+        for rec in caplog.records
         if rec.message.strip().startswith("{") and rec.message.strip().endswith("}")
     ]
 
@@ -39,7 +41,9 @@ def test_logging_middleware_outputs_structured_log(caplog, fake_app):
     log_entry = json.loads(valid_json_lines[0])
 
     # Validate structure
-    assert set(["method", "path", "status_code", "duration_ms"]).issubset(log_entry.keys())
+    assert set(["method", "path", "status_code", "duration_ms"]).issubset(
+        log_entry.keys()
+    )
     assert log_entry["method"] == "GET"
     assert log_entry["path"] == "/todos"
     assert isinstance(log_entry["duration_ms"], (int, float))

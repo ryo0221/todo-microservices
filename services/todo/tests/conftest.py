@@ -16,7 +16,9 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 
 def make_token(user_id: int) -> str:
-    return jwt.encode({"sub": str(user_id), "typ": "access"}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return jwt.encode(
+        {"sub": str(user_id), "typ": "access"}, JWT_SECRET, algorithm=JWT_ALGORITHM
+    )
 
 
 @pytest.fixture(scope="session")
@@ -29,6 +31,7 @@ def _test_db_url():
         os.unlink(tmp.name)
     except FileNotFoundError:
         pass
+
 
 @pytest.fixture(scope="session")
 def _engine(_test_db_url):
@@ -55,6 +58,7 @@ def _override_get_db(db_session):
             yield db_session
         finally:
             pass
+
     app.dependency_overrides[get_db] = _get_db_for_tests
     yield
     app.dependency_overrides.clear()

@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse, Response as StarletteResponse
 def make_client() -> AsyncClient:
     return AsyncClient()
 
+
 async def _maybe_await_json(resp: Response):
     """
     テストの FakeResponse が `async def json()` を持つ想定に合わせて、
@@ -49,7 +50,7 @@ async def forward(request: FastAPIRequest, upstream_base: str) -> JSONResponse:
     # 下流へ転送
     async with make_client() as client:
         resp = await client.send(req)
-    
+
     # レスポンス処理
     data = await _maybe_await_json(resp)
     status = getattr(resp, "status_code", 200)
@@ -57,11 +58,7 @@ async def forward(request: FastAPIRequest, upstream_base: str) -> JSONResponse:
 
     if isinstance(data, (dict, list, str, int, float)) or data is None:
         # JSON として返せる場合は JSONResponse
-        return JSONResponse(
-            content=data, 
-            status_code=status,
-            headers=headers
-            )
+        return JSONResponse(content=data, status_code=status, headers=headers)
     else:
         # それ以外（bytes など）はそのままバイナリでパススルー
         content = getattr(resp, "content", b"")
@@ -70,8 +67,5 @@ async def forward(request: FastAPIRequest, upstream_base: str) -> JSONResponse:
         if headers_obj:
             media_type = headers_obj.get("content-type")
         return StarletteResponse(
-            content=content,
-            status_code=status,
-            media_type=media_type,
-            headers=headers
+            content=content, status_code=status, media_type=media_type, headers=headers
         )

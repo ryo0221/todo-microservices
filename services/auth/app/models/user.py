@@ -3,6 +3,7 @@ from sqlalchemy import String, Integer, UniqueConstraint
 
 from ..db.base import Base
 
+
 class User(Base):
     __tablename__ = "users"
     __table_args__ = (UniqueConstraint("email", name="uq_users_email"),)

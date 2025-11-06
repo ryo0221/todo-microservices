@@ -1,8 +1,10 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Boolean
 
+
 class Base(DeclarativeBase):
     pass
+
 
 class Todo(Base):
     __tablename__ = "todos"

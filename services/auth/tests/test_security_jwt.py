@@ -38,6 +38,6 @@ def test_invalid_token_type_returns_none():
 def test_expired_token_is_invalid():
     # 有効期限を「すぐに切れる」にして検証
     token = create_access_token("user@example.com", expires_minutes=0)
-    time.sleep(1) # 念のため待つ    
+    time.sleep(1)  # 念のため待つ
     result = verify_token(token, "access")
     assert result is None
