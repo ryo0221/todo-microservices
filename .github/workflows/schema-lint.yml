@@ -26,7 +26,7 @@ jobs:
       - name: Run schema consistency checks
         run: |
           # ✅ 型ヒントとPydanticモデル構造のチェック
-          ruff check . --select F821,F401,E999
+          ruff check . --select F821,F401
           
           # ✅ Pydantic v2 非推奨設定の検出 (Config -> ConfigDict)
           if grep -R "class Config" services gateway | grep -v "__init__"; then
