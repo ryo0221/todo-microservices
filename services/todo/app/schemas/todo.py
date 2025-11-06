@@ -1,16 +1,37 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
-class TodoCreate(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
+
+class TodoBase(BaseModel):
+    """共通: Todoの基本情報"""
+
+    title: str
+
+
+class TodoCreate(TodoBase):
+    """Todo作成リクエスト"""
+
+    pass
+
 
 class TodoUpdate(BaseModel):
-    title: str | None = Field(default=None, min_length=1, max_length=200)
-    completed: bool | None = None
+    """Todo更新リクエスト"""
 
-class TodoOut(BaseModel):
+    title: Optional[str] = None
+    completed: Optional[bool] = None
+
+
+class TodoOut(TodoBase):
+    """レスポンス: 単一Todo"""
+
     id: int
-    title: str
+    owner_id: int
     completed: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TodoResponse(BaseModel):
+    """レスポンス: 複数TodoやAPI統一レスポンスに拡張可能"""
+
+    todos: list[TodoOut]

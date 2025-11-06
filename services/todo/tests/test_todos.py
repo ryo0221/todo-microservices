@@ -5,6 +5,7 @@ from fastapi import status
 
 def _auth_header(user_id: int) -> Dict[str, str]:
     from tests.conftest import make_token
+
     return {"Authorization": f"Bearer {make_token(user_id)}"}
 
 
@@ -47,7 +48,9 @@ def test_update_and_delete(client):
     tid = created["id"]
 
     # update title and complete
-    r_up = client.patch(f"/todos/{tid}", json={"title": "renamed", "completed": True}, headers=headers)
+    r_up = client.patch(
+        f"/todos/{tid}", json={"title": "renamed", "completed": True}, headers=headers
+    )
     assert r_up.status_code == 200
     updated = r_up.json()
     assert updated["title"] == "renamed"
