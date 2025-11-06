@@ -3,7 +3,6 @@ from typing import Any, Optional
 
 import jwt
 from passlib.context import CryptContext
-from jwt import PyJWTError
 
 from .settings import settings
 
@@ -15,7 +14,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_access_token(subject: str, expires_minutes: int = 15) -> str:
-    expire_minutes = expires_minutes or settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    expires_minutes = expires_minutes or settings.ACCESS_TOKEN_EXPIRE_MINUTES
     now = datetime.now(timezone.utc)
     to_encode: dict[str, Any] = {
         "sub": subject,

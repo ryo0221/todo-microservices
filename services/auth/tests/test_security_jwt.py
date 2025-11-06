@@ -1,12 +1,9 @@
 import time
-import pytest
-from datetime import timedelta
 from app.core.security import (
     create_access_token,
     create_refresh_token,
     verify_token,
 )
-from app.core.settings import settings
 
 
 def test_create_and_verify_access_token():
